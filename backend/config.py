@@ -53,13 +53,23 @@ config_by_name = {
     'testing': TestingConfig
 }
 
+ENV_ALIASES = {
+    'dev': 'development',
+    'development': 'development',
+    'staging': 'staging',
+    'prod': 'production',
+    'production': 'production',
+    'test': 'testing',
+    'testing': 'testing'
+}
+
 
 def get_config(env: str = None) -> Config:
     """
     Get configuration object based on environment.
     
     Args:
-        env: Environment name (dev, staging, prod, testing)
+        env: Environment name (development, staging, production, testing)
              If None, reads from FLASK_ENV or defaults to 'development'
     
     Returns:
@@ -67,5 +77,9 @@ def get_config(env: str = None) -> Config:
     """
     if env is None:
         env = os.getenv('FLASK_ENV', 'development')
+
+    normalized = env.strip().lower()
+    normalized = ENV_ALIASES.get(normalized, 'development')
     
-    return config_by_name.get(env, DevelopmentConfig)
+    config_class = config_by_name.get(normalized, DevelopmentConfig)
+    return config_class()
