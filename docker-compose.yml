@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_ENV: development
+      FLASK_DEBUG: "true"
+    volumes:
+      - ./backend:/app/backend
+    command: python -m flask --app backend.app run --host=0.0.0.0 --port=5000
+
+  frontend:
+    image: node:18-alpine
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    command: python -m http.server 3000
+    depends_on:
+      - backend
+
+volumes:
+  backend_volume:
